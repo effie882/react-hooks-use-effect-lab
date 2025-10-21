@@ -1,41 +1,37 @@
 import React, { useState } from "react";
 import Question from "./Question";
-import quiz from "../data/quiz";
+import questionsData from "../data/questions";
 
 function App() {
-  const [questions, setQuestions] = useState(quiz);
-  const [currentQuestionId, setCurrentQuestion] = useState(1);
-  const [score, setScore] = useState(0);
-  const currentQuestion = questions.find((q) => q.id === currentQuestionId);
+  const [index, setIndex] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
 
-  function handleQuestionAnswered(correct) {
-    if (currentQuestionId < questions.length) {
-      setCurrentQuestion((currentQuestionId) => currentQuestionId + 1);
-    } else {
-      setCurrentQuestion(null);
+  const question = questionsData[index];
+
+  function handleAnswer(isCorrect) {
+    if (isCorrect) {
+      setCorrectCount((count) => count + 1);
     }
-    if (correct) {
-      setScore((score) => score + 1);
+    const nextIndex = index + 1;
+    if (nextIndex < questionsData.length) {
+      setIndex(nextIndex);
+    } else {
+      alert(`You finished! You got ${correctCount + (isCorrect ? 1 : 0)} right!`);
+      setIndex(0);
+      setCorrectCount(0);
     }
   }
 
   return (
     <main>
-      <section>
-        {currentQuestion ? (
-          <Question
-            question={currentQuestion}
-            onAnswered={handleQuestionAnswered}
-          />
-        ) : (
-          <>
-            <h1>Game Over</h1>
-            <h2>Total Correct: {score}</h2>
-          </>
-        )}
-      </section>
+      <h1>Trivia Time!</h1>
+      <h3>
+        Score: {correctCount} / {questionsData.length}
+      </h3>
+      <Question question={question} onAnswered={handleAnswer} />
     </main>
   );
 }
 
 export default App;
+
